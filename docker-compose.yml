@@ -1,10 +1,6 @@
 version: '3.8'
 services:
-  web:
+  tests:
     build: .
-    ports:
-      - '8000:8000'
-    environment:
-      - PYTHONUNBUFFERED=1
-      - DEMO_DB=true
-    restart: unless-stopped
+    container_name: worker_pool_tests
+    tty: true

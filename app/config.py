@@ -1,24 +1,29 @@
 import os
-from typing import Any
+from dataclasses import dataclass
 
-def env(key: str, default: Any) -> Any:
-    val = os.getenv(key)
-    return type(default)(val) if val is not None and default is not None else (val if val is not None else default)
 
-# Core settings (tweakable via env)
-QUEUE_SIZE = int(env("QUEUE_SIZE", 50))
-WORKERS = int(env("WORKERS", 4))
-ENQUEUE_TIMEOUT = float(env("ENQUEUE_TIMEOUT", 0.05))
-JOB_TIMEOUT = float(env("JOB_TIMEOUT", 5.0))
-DOWNSTREAM_TIMEOUT = float(env("DOWNSTREAM_TIMEOUT", 2.0))
-DOWNSTREAM_RETRIES = int(env("DOWNSTREAM_RETRIES", 2))
-DOWNSTREAM_JITTER = float(env("DOWNSTREAM_JITTER", 0.08))
-CB_FAILURE_THRESHOLD = int(env("CB_FAILURE_THRESHOLD", 5))
-CB_RESET_SECONDS = int(env("CB_RESET_SECONDS", 10))
-DEMO_DB = env("DEMO_DB", "true").lower() in ("1","true","yes")
-DB_DSN = env("DB_DSN", "postgresql://user:pass@localhost/db")
-CACHE_TTL = int(env("CACHE_TTL", 30))
-DOWNSTREAM_FAIL_RATE = float(env("DOWNSTREAM_FAIL_RATE", 0.2))
+def _bool_env(name, default=False):
+    v = os.getenv(name)
+    if v is None:
+        return default
+    return v.lower() in ("1", "true", "yes", "y")
 
-# App metadata
-APP_NAME = env("APP_NAME", "fastapi-backpressure-demo")
+
+@dataclass
+class Config:
+    # Postgres DSN, e.g. "postgresql://user:pass@localhost:5432/dbname"
+    POSTGRES_DSN: str
+    POOL_MIN: int
+    POOL_MAX: int
+    DEMO_MODE: bool
+    # simple tuning knobs
+    QUERY_TIMEOUT_SEC: int
+
+
+config = Config(
+    POSTGRES_DSN=os.getenv("POSTGRES_DSN", "postgresql://postgres:postgres@localhost:5432/postgres"),
+    POOL_MIN=int(os.getenv("POSTGRES_POOL_MIN", "1")),
+    POOL_MAX=int(os.getenv("POSTGRES_POOL_MAX", "5")),
+    DEMO_MODE=_bool_env("DEMO_MODE", default=True),
+    QUERY_TIMEOUT_SEC=int(os.getenv("QUERY_TIMEOUT_SEC", "5")),
+)
