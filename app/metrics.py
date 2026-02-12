@@ -1,27 +1,27 @@
-from prometheus_client import CollectorRegistry, Counter, Gauge, Histogram, generate_latest
-from prometheus_client import exposition
+from prometheus_client import Counter, Gauge, Histogram
 
-# Use a dedicated registry for clarity; apps can expose this via /metrics
-registry = CollectorRegistry()
-
-requests_total = Counter("app_requests_total", "Total requests handled", registry=registry)
-request_latency_seconds = Histogram("app_request_latency_seconds", "Request latency seconds", buckets=(0.005,0.01,0.05,0.1,0.5,1,5), registry=registry)
-cache_hits = Counter("app_cache_hits_total", "Cache hits", registry=registry)
-cache_misses = Counter("app_cache_misses_total", "Cache misses", registry=registry)
-db_pool_connections = Gauge("app_db_pool_connections", "DB pool connections in use (approx)", registry=registry)
+# Prometheus metrics
+QUEUE_DEPTH = Gauge('app_queue_depth', 'Number of items in the work queue')
+WORKER_OCCUPIED = Gauge('app_worker_occupied', 'Number of workers currently processing tasks')
+REJECTED_REQUESTS = Counter('app_rejected_requests_total', 'Number of requests rejected due to backpressure or circuit-breaker')
+TASK_LATENCY = Histogram('app_task_latency_seconds', 'Task processing latency in seconds')
 
 
-def metrics_asgi_app(scope, receive, send):
-    """A minimal ASGI app that serves /metrics using the registry."""
-    assert scope["type"] == "http"
-    async def send_response(body: bytes, status: int = 200, content_type: str = "text/plain; version=0.0.4"):
-        await send({"type": "http.response.start", "status": status, "headers": [(b"content-type", content_type.encode())]})
-        await send({"type": "http.response.body", "body": body})
-
-    data = generate_latest(registry)
-    await send_response(data)
+def set_queue_depth(n: int):
+    QUEUE_DEPTH.set(n)
 
 
-def export_metrics() -> bytes:
-    """Return the latest metrics payload (Prometheus text format)."""
-    return generate_latest(registry)
+def inc_worker():
+    WORKER_OCCUPIED.inc()
+
+
+def dec_worker():
+    WORKER_OCCUPIED.dec()
+
+
+def inc_rejected():
+    REJECTED_REQUESTS.inc()
+
+
+def observe_latency(sec: float):
+    TASK_LATENCY.observe(sec)
