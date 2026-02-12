@@ -1,6 +1,6 @@
-Project: fastapi-backpressure-demo
+# Project: fastapi-backpressure-demo
 
-Overview
+## Overview
 
 This repository is a compact production-style FastAPI scaffold demonstrating explicit backpressure patterns:
 - Concurrency limits and bounded queues with worker pools
@@ -13,7 +13,7 @@ This repository is a compact production-style FastAPI scaffold demonstrating exp
 
 This first step contains the project scaffold (metadata, Dockerfile, docker-compose and Makefile). The full implementation (handlers, workers, DB adapters, tests) will follow in subsequent steps.
 
-Quickstart (local, minimal)
+## Quickstart (local, minimal)
 
 Prereqs: Python 3.11+, docker & docker compose
 
@@ -42,7 +42,7 @@ Files in this scaffold
 - Dockerfile: container build; creates a minimal app (app/main.py) at image build time so docker compose works immediately
 - docker-compose.yml: a single service for the web app; environment toggles can enable demo DB mode
 
-Talk track / Architecture (short)
+## Talk track / Architecture (short)
 
 - Ingress: FastAPI receives requests. Controlled concurrency/backpressure at the edge prevents overload.
 - Work queue: bounded async queue with worker pool executes expensive tasks; when full, requests are rejected early with 429/503 and Retry-After.
