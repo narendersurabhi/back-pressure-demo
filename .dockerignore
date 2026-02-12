@@ -1,0 +1,12 @@
+__pycache__
+*.pyc
+.env
+.env.*
+build
+dist
+.git
+.gitignore
+.vscode
+.idea
+Dockerfile
+docker-compose.override.yml
