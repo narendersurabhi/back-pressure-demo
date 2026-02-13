@@ -1,12 +1,13 @@
 # IMPLEMENTATION_PLAN
 
-Goal: Rewrite README.md to include: setup (local + docker); how to run load tests; how to observe metrics; Mermaid architecture diagram; explanation of backpressure choices and tradeoffs. Create IMPLEMENTATION_PLAN.md documenting steps and then implement them. Keep implementation compact and use workspace-relative paths.
+Goal: Create IMPLEMENTATION_PLAN.md and implement: worker pool + queue with backpressure, retry logic and circuit-breaker; add Postgres adapter with demo-mode toggles; add Prometheus metrics for queue depth, worker occupancy, rejected requests; add Locust tests for load/pressure tuning. Keep implementation compact.
 
 ## Steps
-- [x] Step 1: Create IMPLEMENTATION_PLAN documenting the work and deliverables (files: IMPLEMENTATION_PLAN.md)
-- [x] Step 2: Rewrite README with setup (local + Docker), load-test instructions, metrics, Mermaid diagram, and backpressure explanation (files: README.md)
-- [x] Step 3: Add compact FastAPI app that exposes Prometheus metrics (files: src/app.py, requirements.txt)
-- [x] Step 4: Add Dockerfile and docker-compose to run the app, Prometheus, and Grafana (files: Dockerfile, docker-compose.yml)
-- [x] Step 5: Add monitoring configs: Prometheus scrape config and a simple Grafana dashboard JSON (files: monitoring/prometheus.yml, monitoring/grafana_dashboard.json)
-- [x] Step 6: Provide load-testing scripts and instructions for running them (files: loadtests/load_test.py, loadtests/README.md)
-- [x] Step 7: Add a minimal test to validate the app endpoint (files: tests/test_app.py)
+- [x] Step 1: Initialize repo and docs (files: README.md, IMPLEMENTATION_PLAN.md, requirements.txt, .gitignore)
+- [x] Step 2: Create app entry and config (files: app/main.py, app/config.py, app/api.py)
+- [x] Step 3: Add Prometheus metrics integration (files: app/metrics.py, app/main.py)
+- [x] Step 4: Implement worker pool with backpressure, retries and circuit-breaker (files: app/worker.py, app/config.py)
+- [x] Step 5: Add Postgres adapter and demo-mode toggles (files: app/adapters/postgres.py, app/config.py)
+- [x] Step 6: Expose HTTP API endpoints for enqueuing and health (files: app/api.py, app/main.py)
+- [x] Step 7: Add Locust load/pressure tuning tests (files: locust/locustfile.py, locust/README.md)
+- [x] Step 8: Docker and tests (files: Dockerfile, docker-compose.yml, tests/test_worker.py, pytest.ini)
