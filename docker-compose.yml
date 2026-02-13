@@ -1,6 +1,48 @@
-version: '3.8'
+version: "3.8"
 services:
-  tests:
-    build: .
-    container_name: worker_pool_tests
-    tty: true
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    networks:
+      - monitoring
+    environment:
+      - PYTHONUNBUFFERED=1
+    # Mount workspace so code changes are available; app image still built for dependencies
+    volumes:
+      - ./:/app:ro
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    # Expects ./prometheus.yml to be added in the workspace (relative path)
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+volumes:
+  grafana_data: {}
+
+networks:
+  monitoring:
+    driver: bridge
